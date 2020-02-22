@@ -39,7 +39,7 @@
 /**
  * You should add more #includes here
  */
-//#include "okapi/api.hpp"
+#include "okapi/api.hpp"
 //#include "pros/api_legacy.h"
 
 /**
@@ -53,6 +53,11 @@
 // using namespace pros;
 // using namespace pros::literals;
 // using namespace okapi;
+#include "Drive.hpp"
+#include "Grabber.hpp"
+#include "Intake.hpp"
+#include "Lift.hpp"
+#include "MidDrive.hpp"
 
 /**
  * Prototypes for the competition control tasks are redefined here to ensure
