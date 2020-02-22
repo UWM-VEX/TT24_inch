@@ -9,10 +9,11 @@
  */
 void initialize()
 {
-	pros::lcd::initialize();
+//	pros::lcd::initialize();
+//	pros::lcd::set_text(1, "Hello");
   robotGrabber.initGrabber(4,-3);
-  robotIntake.initIntake(-2,1);
-  robotLift.initLift(-8,9);
+  robotIntake.initIntake(2,-1);
+  robotLift.initLift(8,-9);
 //  robotDrive.initDrive(-12,-13,16,14);
   robotMid.initMid(15);
 }

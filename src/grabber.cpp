@@ -12,7 +12,7 @@ void Grabber::initGrabber(int8_t leftGrabberPort, int8_t rightGrabberPort)
   rightGrabber = new Motor(std::abs(rightGrabberPort), E_MOTOR_GEARSET_18, rightGrabberPort < 0, E_MOTOR_ENCODER_DEGREES);
 
   IN_POS = 0;
-  OUT_POS = -105;
+  OUT_POS = 130;
 }
 
 void Grabber::move(int speed)

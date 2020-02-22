@@ -12,7 +12,7 @@ void Lift::initLift(int8_t leftLiftPort, int8_t rightLiftPort)
 	rightLift = new Motor(std::abs(rightLiftPort), E_MOTOR_GEARSET_36, rightLiftPort < 0, E_MOTOR_ENCODER_DEGREES);
 
 
-  FORWARD_POS = 140;
+  FORWARD_POS = 160;
   BACK_POS = 0;
 }
 

@@ -14,7 +14,7 @@ void opcontrol() {
 	okapi::AbstractMotor::gearset::green, {{4_in, 9_in}, imev5GreenTPR}).build();
 //	okapi::ChassisControllerIntegrated opcontrolDrive = robotDrive.makeDrive();
 
-int zone = 20;//Dead-zone value
+int zone = 0;//Dead-zone value
 
 float mult = 1; //Speed Multiplier
 float max = 127 * mult;
@@ -38,112 +38,71 @@ float pmin = -127 * mult;
 	if(partner.is_connected()){
 //Multiplier
 		if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_UP)){
-			bool up = false;
+			static bool up = false;
 			up = !up;
 			if(up){
 				mult = 1;
 			}
 		}
 		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)){
-			bool med = false;
+			static bool med = false;
 			med = !med;
 			if(med){
 				mult = .5;
 			}
 		}
 		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)){
-			bool down = false;
+			static bool down = false;
 			down = !down;
 			if(down){
 				mult = .25;
 			}
 		}
 		if(partner.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT)){
-			bool pup = false;
+			static bool pup = false;
 			pup = !pup;
 			if(pup){
 				pmult = 1;
 			}
 		}
 		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)){
-			bool pmed = false;
+			static bool pmed = false;
 			pmed = !pmed;
 			if(pmed){
 				pmult = .5;
 			}
 		}
 		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
-			bool pdown = false;
+			static bool pdown = false;
 			pdown = !pdown;
 			if(pdown){
 				pmult = .25;
 			}
 		}
 //DRIVE
-		int driveSelect = 1;
+		uint driveSelect = 1;
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
-			bool pressed = false;
+			static bool pressed = false;
 			pressed = !pressed;
-			if(pressed){
-				if(driveSelect < 4){
-					driveSelect++;
-				}
-				else{
+			pros::lcd::clear();
+			if(pressed && driveSelect<4){
+				driveSelect ++;
+			}
+			else if(pressed && driveSelect>4){
 					driveSelect = 1;
-				}
 			}
 		}
 		switch(driveSelect)
 		{
 		case 1:
-			pros::lcd::clear();
-			pros::lcd::set_text(0, "Arcade Right Joystick");
-			pros::lcd::set_text(1, "Strafe Left Joystick X");
-			 	if((std::abs(master.get_analog(ANALOG_RIGHT_Y))>zone) || ((std::abs(master.get_analog(ANALOG_RIGHT_X))>zone))){
-				myChassis->model().arcade((((master.get_analog(ANALOG_RIGHT_Y))/127.0)*mult), ((master.get_analog(ANALOG_RIGHT_X))/127.0)*mult);
-				}
-				if((std::abs(master.get_analog(ANALOG_LEFT_X))>zone)){
-					robotMid.move((master.get_analog(ANALOG_LEFT_X))*mult);
-				}
-				else{
-					myChassis->model().arcade(off,off);
-					robotMid.move(off);
-				}
-		break;
-		case 2:
-		pros::lcd::clear();
-		pros::lcd::set_text(0, "Arcade Right Forward");
-		pros::lcd::set_text(1, "Turn Left X");
-		pros::lcd::set_text(2, "Strafe Right Joystick X");
-			if((std::abs(master.get_analog(ANALOG_RIGHT_Y))>zone) || ((std::abs(master.get_analog(ANALOG_LEFT_X))>zone))){
-				myChassis->model().arcade((((master.get_analog(ANALOG_RIGHT_Y))/127.0)*mult), ((master.get_analog(ANALOG_LEFT_X))/127.0)*mult);
-			}
-			if((master.get_analog(ANALOG_RIGHT_X))>zone){
-				robotMid.move((master.get_analog(ANALOG_RIGHT_X))*mult);
+		// pros::lcd::clear();
+		// pros::lcd::set_text(0, "Tank Drive");
+		// pros::lcd::set_text(1, "Strafe Bumpers");
+			if((std::abs(master.get_analog(ANALOG_LEFT_Y))>zone) || ((std::abs(master.get_analog(ANALOG_RIGHT_Y))>zone))){
+				myChassis->model().tank((((master.get_analog(ANALOG_LEFT_Y))/127.0)*mult), ((master.get_analog(ANALOG_RIGHT_Y))/127.0)*mult);
 			}
 			else{
-				myChassis->model().arcade(off,off);
-				robotMid.move(off);
-			}
-		break;
-		case 3:
-		pros::lcd::clear();
-		pros::lcd::set_text(0, "Tank Drive");
-		pros::lcd::set_text(1, "Strafe Right Joystick X");
-				if((std::abs(master.get_analog(ANALOG_LEFT_Y))>zone) || ((std::abs(master.get_analog(ANALOG_RIGHT_Y))>zone))){
-					myChassis->model().tank((((master.get_analog(ANALOG_LEFT_Y))/127.0)*mult), ((master.get_analog(ANALOG_RIGHT_Y))/127.0)*mult);
-				}
-				if((master.get_analog(ANALOG_RIGHT_X))>zone){
-					robotMid.move((master.get_analog(ANALOG_RIGHT_X))*mult);
-				}
-				else{
-					myChassis->model().arcade(off,off);
-					robotMid.move(off);
-				}
-		break;
-		case 4:
-			if((std::abs(master.get_analog(ANALOG_LEFT_Y))>zone) || ((std::abs(master.get_analog(ANALOG_RIGHT_Y))>zone))){
-				myChassis->model().arcade((((master.get_analog(ANALOG_LEFT_Y))/127.0)*mult), ((master.get_analog(ANALOG_RIGHT_Y))/127.0)*mult);
+				myChassis->model().tank(off,off);
 			}
 			if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
 				robotMid.move(max);
@@ -152,15 +111,30 @@ float pmin = -127 * mult;
 				robotMid.move(min);
 			}
 			else{
-				myChassis->model().arcade(off,off);
 				robotMid.move(off);
 			}
 		break;
-		}
-
+		case 2:
+		// pros::lcd::clear();
+		// pros::lcd::set_text(0, "Tank Drive");
+		// pros::lcd::set_text(1, "Strafe Right Joystick X");
+				if((std::abs(master.get_analog(ANALOG_LEFT_Y))>zone) || ((std::abs(master.get_analog(ANALOG_RIGHT_Y))>zone))){
+					myChassis->model().tank((((master.get_analog(ANALOG_LEFT_Y))/127.0)*mult), ((master.get_analog(ANALOG_RIGHT_Y))/127.0)*mult);
+				}
+				else{
+					myChassis->model().tank(off,off);
+				}
+				if((master.get_analog(ANALOG_RIGHT_X))>zone){
+					robotMid.move((master.get_analog(ANALOG_RIGHT_X))*mult);
+				}
+				else{
+					robotMid.move(off);
+				}
+		break;
+	}
 
 //LIFT and GRABBER
-		if(robotLift.liftPos() < 140){
+		if(robotLift.liftPos() < 160){
 			if((partner.get_analog(ANALOG_RIGHT_Y))>zone){
 				robotLift.move(partner.get_analog(ANALOG_RIGHT_Y));
 				robotGrabber.in();
@@ -191,7 +165,7 @@ float pmin = -127 * mult;
 			}
 
 		}
-		else if(robotLift.liftPos() > 140){
+		else if(robotLift.liftPos() > 160){
 			if((partner.get_analog(ANALOG_RIGHT_Y))>zone){
 				robotGrabber.out();
 			}
